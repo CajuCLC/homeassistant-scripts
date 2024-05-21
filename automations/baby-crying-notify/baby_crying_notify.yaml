@@ -1,0 +1,35 @@
+alias: Notify When Baby Cries Three Times in Five Minutes
+description: "This automation notifies and triggers actions when a baby crying sound is detected three times within five minutes from a specified camera."
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.nursery_baby_cry_detected
+    to: "on"
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+condition:
+  - condition: template
+    value_template: |
+      {{
+        (as_timestamp(now()) - as_timestamp(states.binary_sensor.nursery_baby_cry_detected.last_changed) <= 300)
+        and states('binary_sensor.nursery_baby_cry_detected') == 'on'
+      }}
+action:
+  - device_id: 123abc456def789ghi012jkl345mno678
+    domain: mobile_app
+    type: notify
+    message: BABY IS CRYING
+    title: BABY CRYING
+  - device_id: 987zyx654wvu321tsr098qpo765lmn432
+    domain: mobile_app
+    type: notify
+    message: Baby is crying
+    title: BABY CRYING
+  - type: turn_on
+    device_id: 456def123abc789ghi012jkl345mno678
+    entity_id: abc123def456ghi789jkl012mno345pq
+    domain: light
+    brightness_pct: 100
+mode: restart
